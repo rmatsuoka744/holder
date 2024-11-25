@@ -2,12 +2,14 @@ package Holder
 
 import Holder.handlers.AccessTokenHandler
 import Holder.handlers.CredentialHandler
+import Holder.handlers.ProofJwtGenerator
 import Holder.storage.Storage
 
-import com.google.gson.Gson 
+import com.google.gson.Gson
 
 fun main() {
-    val gson = Gson() // Gsonインスタンスを作成
+    val gson = Gson() // Gson インスタンスを作成
+    val privateKeyPath = "/home/rmatsuoka/Holder/app/src/main/kotlin/Holder/keys/client_p256_private.pem"
 
     while (true) {
         println("\nHolder CLI Application")
@@ -42,30 +44,33 @@ fun main() {
                     continue
                 }
 
+                val proofJwt = ProofJwtGenerator.generateProofJwt(privateKeyPath)
+
                 println("Requesting Verifiable Credential...")
                 CredentialHandler.requestVerifiableCredential(
                     url = "http://localhost:8080/credential",
-                    accessToken = accessToken, // 保存したアクセストークンを使用
+                    accessToken = accessToken,
                     cnfJwk = mapOf(
-                        "alg" to "EdDSA",
-                        "crv" to "Ed25519",
-                        "kty" to "OKP",
+                        "alg" to "ES256",
+                        "crv" to "P-256",
+                        "kty" to "EC",
                         "use" to "sig",
-                        "x" to "-w76fv0jlTZo3H6mtdcJrJZfJ4Ltm2MJi09V_zxM3Vo"
+                        "x" to "XcW-sLJaCg0FB__Pgpg8nFZialZKB7goW_ohTZi2zyY",
+                        "y" to "Vu868_dULyyXyi2uurc-QmxY2jIKy-DIxAn0wzhcyXk"
                     ),
-                    proofJwt = "eyJ0eXAiOiJvcGVuaWQ0dmNpLXByb29mK2p3dCIsImFsZyI6IkVkRFNBIiwiandrIjp7InVzZSI6InNpZyIsImt0eSI6Ik9LUCIsImNydiI6IkVkMjU1MTkiLCJ4IjoiLXc3NmZ2MGpsVFpvM0g2bXRkY0pySlpmSjRMdG0yTUppMDlWX3p4TTNWbyJ9fQ.eyJleHAiOjE3MzIyNDU2NjMsImlhdCI6MTczMjI0NDQ2Mywibm9uY2UiOiJ0ZXN0X25vbmNlIn0.qulCKRx1PXS5so96FhHG7dXWPbLkeArsEO28cNmOTwxMRWrbf5JkxrKLCxDLwSMqDmI_2kyzCCKS1pG4IvHsAg",
+                    proofJwt = proofJwt,
                     onSuccess = {
                         val sdJwtVc = CredentialHandler.getSdJwtVc()
                         println("VC successfully requested!")
                         println("SD-JWT-VC: $sdJwtVc")
                         if (sdJwtVc != null) {
-                            val sdJwtVcJson = gson.toJson(sdJwtVc) // SdJwtVcオブジェクトをJSON文字列に変換
-                            Storage.saveVerifiableCredential(sdJwtVcJson) // 文字列として保存
+                            val sdJwtVcJson = gson.toJson(sdJwtVc)
+                            Storage.saveVerifiableCredential(sdJwtVcJson)
                         }
                     },
                     onError = { e -> println("Failed to request VC: ${e.message}") }
                 )
-                Thread.sleep(1000) // 非同期のレスポンスを待つ簡易的な方法
+                Thread.sleep(1000)
             }
 
             3 -> {

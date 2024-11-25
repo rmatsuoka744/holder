@@ -14,6 +14,5 @@ data class CredentialResponse(
     data class SdJwtVc(
         val sd_jwt: String,
         val disclosures: List<String>,
-        val key_binding_jwt: String
     )
 }
