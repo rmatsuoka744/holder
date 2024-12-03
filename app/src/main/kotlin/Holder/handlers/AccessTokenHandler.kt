@@ -20,6 +20,7 @@ object AccessTokenHandler {
         onError: (Exception) -> Unit
     ) {
         val requestBodyJson = mapOf(
+            "vct" to "https://fujita-issuer.example.com/vc/mynumber",
             "grant_type" to "client_credentials",
             "client_id" to clientId,
             "client_secret" to clientSecret,

@@ -28,7 +28,7 @@ object Storage {
     fun loadVerifiableCredential(): String? {
         val file = File(VC_FILE)
         return if (file.exists()) {
-            file.readText()
+            file.readText().trim('"') 
         } else {
             null
         }

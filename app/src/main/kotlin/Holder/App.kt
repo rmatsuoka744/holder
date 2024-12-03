@@ -3,7 +3,10 @@ package Holder
 import Holder.handlers.AccessTokenHandler
 import Holder.handlers.CredentialHandler
 import Holder.handlers.ProofJwtGenerator
+import Holder.handlers.VcProcessor
+import Holder.handlers.VPGenerator
 import Holder.storage.Storage
+import Holder.utils.Utils.loadPrivateKey
 
 import com.google.gson.Gson
 
@@ -16,6 +19,7 @@ fun main() {
         println("1. Request Access Token")
         println("2. Request Verifiable Credential")
         println("3. Show Stored SD-JWT-VC")
+        println("4. Generate VP")
         println("0. Exit")
         print("Select an option: ")
 
@@ -80,6 +84,39 @@ fun main() {
                     println("Stored SD-JWT-VC: $storedVc")
                 } else {
                     println("No SD-JWT-VC found in storage.")
+                }
+            }
+
+            4 -> {
+                // VPを生成
+                println("Generating Verifiable Presentation...")
+
+                // 保存された VC を読み込む
+                val storedVc = Storage.loadVerifiableCredential()
+                if (storedVc.isNullOrEmpty()) {
+                    println("No VC found. Please request a VC first.")
+                    continue
+                }
+
+                try {
+                    // VC を分割
+                    val (sdJwt, disclosures) = VcProcessor.parseVc(storedVc)
+
+                    // ディスクロージャを選択（例: 全て開示）
+                    println("Available Disclosures: $disclosures")
+                    println("Enter indices of disclosures to include (comma-separated, e.g., '0,2'):")
+                    val indicesInput = readlnOrNull() ?: ""
+                    val selectedIndices = indicesInput.split(",").mapNotNull { it.toIntOrNull() }
+                    val selectedDisclosures = selectedIndices.mapNotNull { disclosures.getOrNull(it) }
+
+                    // VP の生成
+                    val vp = VPGenerator.generateVP(sdJwt, selectedDisclosures, privateKeyPath)
+
+                    // VP を表示
+                    println("Generated Verifiable Presentation:")
+                    println(vp)
+                } catch (e: Exception) {
+                    println("Failed to generate VP: ${e.message}")
                 }
             }
 

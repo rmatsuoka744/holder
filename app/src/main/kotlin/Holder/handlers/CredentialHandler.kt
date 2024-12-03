@@ -11,7 +11,7 @@ import Holder.models.CredentialResponse
 object CredentialHandler {
     private val client = OkHttpClient()
     private val gson = Gson()
-    private var sdJwtVc: CredentialResponse.SdJwtVc? = null // VCを保持
+    private var vc: String? = null // VCを保持
 
     fun requestVerifiableCredential(
         url: String,
@@ -22,7 +22,7 @@ object CredentialHandler {
         onError: (Exception) -> Unit
     ) {
         val requestData = CredentialRequest(
-            formats = listOf("jwt_vc_json", "sd_jwt_vc"),
+            format = "sd_jwt_vc",
             types = listOf("VerifiableCredential", "UniversityDegreeCredential"),
             cnf = mapOf("jwk" to cnfJwk),
             proof = CredentialRequest.Proof(proof_type = "jwt", jwt = proofJwt)
@@ -43,7 +43,7 @@ object CredentialHandler {
                         try {
                             val responseBody = it.body?.string().orEmpty()
                             val credentialResponse = gson.fromJson(responseBody, CredentialResponse::class.java)
-                            sdJwtVc = credentialResponse.sd_jwt_vc // VCを保持
+                            vc = credentialResponse.credential // VCを保持
                             onSuccess()
                         } catch (e: Exception) {
                             onError(e)
@@ -60,7 +60,7 @@ object CredentialHandler {
         })
     }
 
-    fun getSdJwtVc(): CredentialResponse.SdJwtVc? {
-        return sdJwtVc
+    fun getSdJwtVc(): String? {
+        return vc
     }
 }

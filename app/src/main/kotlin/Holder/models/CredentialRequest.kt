@@ -1,7 +1,7 @@
 package Holder.models
 
 data class CredentialRequest(
-    val formats: List<String>,
+    val format: String,
     val types: List<String>,
     val cnf: Map<String, Any>,
     val proof: Proof
