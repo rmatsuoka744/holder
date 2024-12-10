@@ -1,0 +1,6 @@
+{
+    "format": "sd_jwt_vc",
+    "credential": "",
+    "c_nonce": "f021cd55-553f-4344-93aa-80a1be9191db",
+    "c_nonce_expires_in": 300
+}

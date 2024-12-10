@@ -13,8 +13,6 @@ object AccessTokenHandler {
 
     fun requestAccessToken(
         url: String,
-        clientId: String,
-        clientSecret: String,
         scope: String,
         onSuccess: (String) -> Unit,
         onError: (Exception) -> Unit
@@ -22,10 +20,24 @@ object AccessTokenHandler {
         val requestBodyJson = mapOf(
             "vct" to "https://fujita-issuer.example.com/vc/mynumber",
             "grant_type" to "client_credentials",
-            "client_id" to clientId,
-            "client_secret" to clientSecret,
+            "auth_data" to mapOf(
+                "identificationParam" to "dummy",
+                "name" to "fujita taro",
+                "gender" to "male",
+                "address" to "aichi",
+                "birthdate" to "2018-10-10"
+            ),
             "scope" to scope
         )
+        // val requestBodyJson = mapOf(
+        //     "vct" to "https://fujita-issuer.example.com/vc/patient-id",
+        //     "grant_type" to "client_credentials",
+        //     "auth_data" to mapOf(
+        //         "patient_id" to "patient:12345",
+        //         "did" to "did:12345"
+        //     ),
+        //     "scope" to scope
+        // )
         val requestBody = gson.toJson(requestBodyJson).toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()

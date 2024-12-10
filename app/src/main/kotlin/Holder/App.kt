@@ -28,8 +28,6 @@ fun main() {
                 println("Requesting Access Token...")
                 AccessTokenHandler.requestAccessToken(
                     url = "http://localhost:8080/token",
-                    clientId = "TEST_CLIENT_ID_1",
-                    clientSecret = "TEST_SECRET_1",
                     scope = "credential_issue",
                     onSuccess = {
                         println("Access Token: $it")

@@ -23,7 +23,8 @@ object CredentialHandler {
     ) {
         val requestData = CredentialRequest(
             format = "sd_jwt_vc",
-            types = listOf("VerifiableCredential", "UniversityDegreeCredential"),
+            types = listOf("VerifiableCredential", "https://fujita-issuer.example.com/vc/mynumber"),
+            // types = listOf("VerifiableCredential", "https://fujita-issuer.example.com/vc/patient-id"),
             cnf = mapOf("jwk" to cnfJwk),
             proof = CredentialRequest.Proof(proof_type = "jwt", jwt = proofJwt)
         )

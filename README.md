@@ -30,10 +30,16 @@
 #### リクエスト例
 ```json
 {
-  "grant_type": "client_credentials",
-  "client_id": "TEST_CLIENT_ID_1",
-  "client_secret": "TEST_SECRET_1",
-  "scope": "credential_issue"
+    "vct": "https://fujita-issuer.example.com/vc/mynumber",
+    "grant_type": "client_credentials",
+    "auth_data": {
+        "identificationParam": "dummy",
+        "name": "fujita taro",
+        "gender": "male",
+        "address": "aichi",
+        "birthdate": "2018-10-10"
+    },
+    "scope": "credential_issue"
 }
 ```
 
@@ -59,8 +65,8 @@
 #### リクエスト例
 ```json
 {
-  "formats": ["jwt_vc_json", "sd_jwt_vc"],
-  "types": ["VerifiableCredential", "UniversityDegreeCredential"],
+  "format": "sd_jwt_vc",
+  "types": ["VerifiableCredential", "https://fujita-issuer.example.com/vc/mynumber"],
   "cnf": {
     "jwk": {
       "alg": "EdDSA",
@@ -80,14 +86,10 @@
 #### レスポンス例
 ```json
 {
-  "sd_jwt_vc": {
-    "header": {
-      "alg": "EdDSA",
-      "typ": "JWT"
-    },
-    "payload": "...",
-    "signature": "..."
-  }
+    "format": "sd_jwt_vc",
+    "credential": "eyJhbGciOiJFUzI1NiIsInR5cCI6ImRjK3NkLWp3dCJ9...",
+    "c_nonce": "f021cd55-553f-4344-93aa-80a1be9191db",
+    "c_nonce_expires_in": 300
 }
 ```
 
